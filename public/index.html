@@ -1105,6 +1105,7 @@
 
   // SHOW SEARCH BAR AGAIN
   document.querySelector('.search-wrap').style.display = 'block';
+  document.getElementById('userResult').style.display = 'block';
 
   foundUser = null;
 }
@@ -1149,27 +1150,24 @@
 
   function showUserResult(user) {
 
-  const avatarContainer = document.getElementById('avatarContainer');
-  const selectedAvatar = document.getElementById('selectedAvatar');
+  const avatarContainer =
+    document.getElementById('avatarContainer');
 
   if (user.avatarUrl) {
 
-    const avatarHTML = `
-      <img class="avatar-img" 
-      src="${user.avatarUrl}" 
-      alt="${user.displayName}" />
+    avatarContainer.innerHTML = `
+      <img class="avatar-img"
+      src="${user.avatarUrl}"
+      alt="${user.displayName}">
     `;
-
-    avatarContainer.innerHTML = avatarHTML;
-    selectedAvatar.innerHTML = avatarHTML;
 
   } else {
 
     avatarContainer.innerHTML = '';
-    selectedAvatar.innerHTML = '';
 
-    avatarContainer.appendChild(makePlaceholder(user.displayName));
-    selectedAvatar.appendChild(makePlaceholder(user.displayName));
+    avatarContainer.appendChild(
+      makePlaceholder(user.displayName)
+    );
   }
 
   document.getElementById('userDisplayName').textContent =
@@ -1178,18 +1176,54 @@
   document.getElementById('userUsername').textContent =
     '@' + user.name;
 
-  document.getElementById('selectedUserName').textContent =
-    user.displayName || user.name;
+  const result =
+    document.getElementById('userResult');
 
-  document.getElementById('liveBalance').textContent =
-    balance.toLocaleString();
+  result.classList.add('visible');
 
-  document.getElementById('userResult').classList.add('visible');
+  // REMOVE AUTO SELECT
+  foundUser = null;
 
-  document.getElementById('amountSection').style.display = 'block';
+  // WAIT FOR USER CLICK
+  result.onclick = () => {
 
-  // HIDE SEARCH BAR AFTER USER FOUND
-  document.querySelector('.search-wrap').style.display = 'none';
+    foundUser = user;
+
+    const selectedAvatar =
+      document.getElementById('selectedAvatar');
+
+    if (user.avatarUrl) {
+
+      selectedAvatar.innerHTML = `
+        <img class="avatar-img"
+        src="${user.avatarUrl}"
+        alt="${user.displayName}">
+      `;
+
+    } else {
+
+      selectedAvatar.innerHTML = '';
+
+      selectedAvatar.appendChild(
+        makePlaceholder(user.displayName)
+      );
+    }
+
+    document.getElementById('selectedUserName').textContent =
+      user.displayName || user.name;
+
+    document.getElementById('liveBalance').textContent =
+      balance.toLocaleString();
+
+    // HIDE SEARCH BAR ONLY AFTER CLICK
+    document.querySelector('.search-wrap').style.display = 'none';
+
+    // HIDE RESULT CARD
+    result.style.display = 'none';
+
+    // SHOW SEND UI
+    document.getElementById('amountSection').style.display = 'block';
+  };
 }
 
   function makePlaceholder(name) {
